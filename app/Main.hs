@@ -67,9 +67,6 @@ player gen stones inputs = Welcome stones : unfoldr psi (Play stones gen, inputs
       | m == 1                = Just (Win, (Continue g, xs))
       | m == 0                = Just (Lose, (Continue g, xs))
       | otherwise             = Just (Turn z' (m-z'), (Play (m-z') g', xs))
-      where m  = n - y
-            r  = m `mod` 4
-            z = (r-1) `mod` 4
-            (z', g') | z /= 0    = (z, g)
-                     | otherwise = randomR (1, min 3 m) g
+      where (m, r, z)  = (n - y, m `mod` 4, (r-1) `mod` 4)
+            (z', g') = if z /= 0 then (z, g) else randomR (1, min 3 m) g
     psi (Play n g, _:xs)      = Just (Error (Play n g), (Play n g, xs))
