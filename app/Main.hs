@@ -18,9 +18,7 @@ parse = catMaybes . map p . lines
   where
     p s | s `elem` ["y", "Y"] = Just Yes
         | s `elem` ["n", "N"] = Just No
-        | otherwise = case safeRead s of
-            Just i  -> Just (Get i)
-            Nothing -> Just (Illegal s)
+        | otherwise = maybe (Just (Illegal s)) (Just . Get) $ safeRead s
 
 data Response  = Welcome Int | Start | Win | Lose | Turn Int Int | Invalid Int | Error State deriving Show
 
