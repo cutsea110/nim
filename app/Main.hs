@@ -16,13 +16,11 @@ data Request = Yes | No | Get Int | Illegal String deriving (Eq, Show)
 parse :: String -> [Request]
 parse = catMaybes . map p . lines
   where
-    p "y" = Just Yes
-    p "Y" = Just Yes
-    p "n" = Just No
-    p "N" = Just No
-    p s = case safeRead s of
-      Just i  -> Just (Get i)
-      Nothing -> Just (Illegal s)
+    p s | s `elem` ["y", "Y"] = Just Yes
+        | s `elem` ["n", "N"] = Just No
+        | otherwise = case safeRead s of
+            Just i  -> Just (Get i)
+            Nothing -> Just (Illegal s)
 
 data Response  = Welcome Int | Start | Win | Lose | Turn Int Int | Invalid Int | Error State deriving Show
 
