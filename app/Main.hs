@@ -39,13 +39,6 @@ pprint = unlines . map p
 
 data State = Play Int StdGen | Continue StdGen deriving Show
 
-main :: IO ()
-main = do
-  hSetBuffering stdin  LineBuffering
-  hSetBuffering stdout NoBuffering
-  gen <- getStdGen
-  interact (pprint . player gen 30 . parse)
-  putStrLn "Thanks for playing!"
 
 player :: StdGen -> Int -> [Request] -> [Response]
 player gen stones inputs = Welcome stones : unfoldr psi (Play stones gen, inputs)
@@ -66,3 +59,14 @@ player gen stones inputs = Welcome stones : unfoldr psi (Play stones gen, inputs
       where (m, r, z)  = (n - y, m `mod` 4, (r-1) `mod` 4)
             (z', g') = if z /= 0 then (z, g) else randomR (1, min 3 m) g
     psi (Play n g, _:xs)      = Just (Error (Play n g), (Play n g, xs))
+
+driver :: ([Request] -> [Response]) -> String -> String
+driver f = pprint . f . parse
+
+main :: IO ()
+main = do
+  hSetBuffering stdin  LineBuffering
+  hSetBuffering stdout NoBuffering
+  gen <- getStdGen
+  interact $ driver (player gen 30)
+  putStrLn "Thanks for playing!"
